@@ -7,6 +7,10 @@ use App\Http\Controllers\Controller;
 
 use App\Profile;
 
+use App\ProfileHistory;
+
+use Carbon\Carbon;
+
 class ProfileController extends Controller
 {
   // add　プロフィールの新規作成画面を表示するアクション。
@@ -42,9 +46,42 @@ class ProfileController extends Controller
       if (empty($profile)) {
         abort(404);    
       }
-      return view('admin.profile.edit', ['news_form' => $profile]);
+      return view('admin.profile.edit', ['profile_form' => $profile]);
   }
 
+  public function index(Request $request)
+  {
+     $posts = Profile::all();
+     
+     return view('admin.profile.index', ['posts' => $posts]);
+  }
+
+  public function delete(Request $request)
+  {
+      
+      $profile = Profile::find($request->id);
+      // 削除する
+      $profile->delete();
+      return redirect('admin/profile/');
+  }  
   
+  public function update(Request $request)
+    {
+        $this->validate($request, Profile::$rules);
+        $profile = Profile::find($request->id);
+        $profile_form = $request->all();
+
+        unset($profile_form['_token']);
+        
+        $profile->fill($profile_form)->save();
+
+        // 以下を追記
+        $history = new ProfileHistory;
+        $history->profile_id = $profile->id;
+        $history->edited_at = Carbon::now();
+        $history->save();
+
+        return redirect('admin/profile/');
+    }
   
 }
