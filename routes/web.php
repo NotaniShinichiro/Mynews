@@ -12,9 +12,13 @@
 */
 Auth::routes();
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () { 
+//    return view('welcome');
+// });
+
+Route::get('/', 'NewsController@index');
+
+Route::get('/profile', 'ProfileController@index');
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function(){
     Route::get('news', 'Admin\NewsController@index');
@@ -31,13 +35,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function(){
     Route::get('profile/edit', 'Admin\ProfileController@edit');
     Route::post('profile/edit', 'Admin\ProfileController@update');
     Route::get('profile/delete', 'Admin\ProfileController@delete');
-    
-    
+
 });
 
 //■09 課題３
 // Route::get('XXX', 'AAAController@bbb');
-
-
 
 Route::get('/home', 'HomeController@index')->name('home');
